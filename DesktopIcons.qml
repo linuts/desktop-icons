@@ -935,6 +935,7 @@ Item {
               maximumLineCount: 1
               visible: cell.showLabels
               color: Color.foreground
+              textFormat: Text.PlainText
               font.family: Style.font.menuFamily
               font.pixelSize: Style.font.body
             }
