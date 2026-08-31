@@ -17,6 +17,7 @@ Item {
   readonly property string home: Quickshell.env("HOME")
   readonly property string stateDir: home + "/.local/state/omarchy/desktop-icons"
   readonly property string configPath: stateDir + "/config.json"
+  readonly property string hiddenStatePath: stateDir + "/hidden-windows.json"
 
   property var settings: DIM.defaultSettings()
   property string desktopDir: home + "/Desktop"
@@ -36,6 +37,7 @@ Item {
   property bool ctxOpen: false
 
   property var hiddenWindows: []
+  property bool hiddenChecked: false
   readonly property string hideWorkspace: "special:desktop-icons"
 
   readonly property int baseIconPx: DIM.iconSizePx(settings.iconSize)
@@ -250,6 +252,14 @@ Item {
     onTextChanged: root.loadSettings(configFile.text())
   }
 
+  FileView {
+    id: hiddenFile
+    path: root.hiddenStatePath
+    atomicWrites: true
+    watchChanges: false
+    onTextChanged: root.checkHiddenState(hiddenFile.text())
+  }
+
   Process {
     id: stateDirPrep
     command: ["bash", "-c", "mkdir -p \"$1\"; mkdir -p \"$2\"", "desktop-icons", root.stateDir, root.desktopDir]
@@ -406,7 +416,31 @@ Item {
       hidden.push({ address: String(w["address"]), workspace: String(ws) })
     }
     root.hiddenWindows = hidden
+    hiddenFile.setText(JSON.stringify(hidden))
+    console.log("[desktop-icons] census: " + hidden.length + " window(s) to hide")
     root.dispatchWindowMoves(hidden, root.hideWorkspace)
+  }
+
+  function checkHiddenState(text) {
+    if (root.hiddenChecked) return
+    root.hiddenChecked = true
+    var list = []
+    try { list = JSON.parse(text || "") } catch (e) { return }
+    if (!Array.isArray(list) || list.length === 0) return
+    root.restoreList(list)
+  }
+
+  function restoreList(list) {
+    if (!list || list.length === 0) return
+    console.log("[desktop-icons] restore: " + list.length + " window(s)")
+    var byWorkspace = {}
+    for (var i = 0; i < list.length; i++) {
+      var ws = list[i].workspace
+      if (!byWorkspace[ws]) byWorkspace[ws] = []
+      byWorkspace[ws].push(list[i])
+    }
+    for (var key in byWorkspace) root.dispatchWindowMoves(byWorkspace[key], key)
+    if (hiddenFile) hiddenFile.setText("")
   }
 
   function dispatchWindowMoves(windows, workspace) {
@@ -425,15 +459,7 @@ Item {
   function restoreWindows() {
     var list = root.hiddenWindows
     root.hiddenWindows = []
-    if (list.length === 0) return
-    var byWorkspace = {}
-    for (var i = 0; i < list.length; i++) {
-      if (!byWorkspace[list[i].workspace]) byWorkspace[list[i].workspace] = []
-      byWorkspace[list[i].workspace].push(list[i])
-    }
-    for (var ws in byWorkspace) {
-      root.dispatchWindowMoves(byWorkspace[ws], ws)
-    }
+    root.restoreList(list)
   }
 
   function parseNetMounts(raw) {
