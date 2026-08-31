@@ -473,7 +473,7 @@ Item {
 
   function openItem(row) {
     if (!row || !row.path) return
-    Quickshell.execDetached(["xdg-open", row.path])
+    Util.execArgv(["gio", "open", row.path])
   }
 
   onSettingsChanged: {
@@ -808,9 +808,11 @@ Item {
             height: GridView.view.cellHeight
 
             readonly property bool hovered: cellMouse.containsMouse
-            readonly property bool isSelected: GridView.view.host.selectedKey === model.key
-            readonly property bool showLabels: GridView.view.host.settings.showLabels
+            readonly property bool isSelected: cell.host.selectedKey === model.key
+            readonly property bool showLabels: cell.host.settings.showLabels
             readonly property int iconPx: GridView.view.iconPx
+            readonly property QtObject host: grid.host
+            readonly property QtObject hostWindow: grid.hostWindow
 
             Rectangle {
               id: highlight
@@ -859,16 +861,16 @@ Item {
               anchors.fill: parent
               acceptedButtons: Qt.LeftButton | Qt.RightButton
               hoverEnabled: true
-              onEntered: GridView.view.host.selectedKey = model.key
+              onEntered: cell.host.selectedKey = model.key
               onClicked: function(mouse) {
                 if (mouse.button === Qt.LeftButton) {
-                  GridView.view.host.openItem(model)
-                  GridView.view.host.selectedKey = model.key
-                  GridView.view.host.kbIndex = index
+                  cell.host.openItem(model)
+                  cell.host.selectedKey = model.key
+                  cell.host.kbIndex = index
                 } else if (mouse.button === Qt.RightButton) {
-                  var win = GridView.view.hostWindow
+                  var win = cell.hostWindow
                   var p = cell.mapToItem(win.contentItem, cell.width / 2, cell.height / 2)
-                  GridView.view.host.openContextMenu(win, p.x, p.y)
+                  cell.host.openContextMenu(win, p.x, p.y)
                 }
               }
             }
