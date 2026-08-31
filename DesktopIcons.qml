@@ -35,6 +35,9 @@ Item {
   property int kbIndex: -1
   property bool ctxOpen: false
 
+  property var hiddenWindows: []
+  readonly property string hideWorkspace: "special:desktop-icons"
+
   readonly property int baseIconPx: DIM.iconSizePx(settings.iconSize)
   readonly property int baseCellW: baseIconPx + Math.round(Style.space(22))
   readonly property int baseCellH: baseIconPx + (settings.showLabels ? Math.round(Style.space(26)) : Math.round(Style.space(14)))
@@ -382,6 +385,57 @@ Item {
     }
   }
 
+  Process {
+    id: clientsProc
+    command: ["hyprctl", "-j", "clients"]
+    stdout: StdioCollector {
+      onStreamFinished: root.onClientsCensus(String(text || ""))
+    }
+  }
+
+  function onClientsCensus(raw) {
+    var list = []
+    try { list = JSON.parse(raw) } catch (e) { return }
+    if (!Array.isArray(list)) return
+    var hidden = []
+    for (var i = 0; i < list.length; i++) {
+      var w = list[i]
+      if (!w || !w["mapped"] || w["hidden"] || w["pinned"]) continue
+      var ws = w["workspace"] ? w["workspace"]["id"] : -1
+      if (typeof ws !== "number" || ws < 0) continue
+      hidden.push({ address: String(w["address"]), workspace: String(ws) })
+    }
+    root.hiddenWindows = hidden
+    root.dispatchWindowMoves(hidden, root.hideWorkspace)
+  }
+
+  function dispatchWindowMoves(windows, workspace) {
+    if (!windows || windows.length === 0) return
+    for (var i = 0; i < windows.length; i++) {
+      var dispatch = "hl.dsp.window.move({ window = \"address:" + windows[i].address
+        + "\", workspace = \"" + workspace + "\", follow = false })"
+      Util.execArgv(["hyprctl", "dispatch", dispatch])
+    }
+  }
+
+  function hideWindowsForDesktop() {
+    if (!clientsProc.running) clientsProc.running = true
+  }
+
+  function restoreWindows() {
+    var list = root.hiddenWindows
+    root.hiddenWindows = []
+    if (list.length === 0) return
+    var byWorkspace = {}
+    for (var i = 0; i < list.length; i++) {
+      if (!byWorkspace[list[i].workspace]) byWorkspace[list[i].workspace] = []
+      byWorkspace[list[i].workspace].push(list[i])
+    }
+    for (var ws in byWorkspace) {
+      root.dispatchWindowMoves(byWorkspace[ws], ws)
+    }
+  }
+
   function parseNetMounts(raw) {
     var out = []
     var lines = raw.split("\n")
@@ -564,6 +618,7 @@ Item {
 
   function enterKeys() {
     if (root.keysActive) return
+    root.hideWindowsForDesktop()
     var target = null
     for (var i = 0; i < panels.instances.length; i++) {
       var p = panels.instances[i]
@@ -585,6 +640,7 @@ Item {
     root.keysPanel = null
     root.kbIndex = -1
     root.selectedKey = ""
+    root.restoreWindows()
   }
 
   function selectKb(index) {
@@ -627,6 +683,7 @@ Item {
   function kbOpen() {
     if (root.kbIndex < 0 || root.kbIndex >= root.itemModel.count) return
     root.openItem(root.itemModel.get(root.kbIndex))
+    root.leaveKeys()
   }
 
   function openContextMenuAtKeys() {

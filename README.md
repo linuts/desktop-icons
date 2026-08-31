@@ -88,6 +88,11 @@ With the desktop focused:
 The selection moves across the icons in the visible grid, not a flat list, so
 arrow keys feel like a real desktop.
 
+While keyboard navigation is active, open windows are parked out of the way in
+a hidden `special:desktop-icons` workspace so the desktop is fully visible.
+They move back to where they were as soon as you open an item or exit the
+mode — no windows are closed, moved across workspaces permanently, or lost.
+
 ### Step 3 — drive the menu from the keyboard
 
 The context menu is a full keyboard citizen, mirroring Omarchy's menu
