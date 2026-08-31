@@ -4,6 +4,8 @@ Desktop icons for Omarchy: files and folders from `~/Desktop`, mounted drives,
 network mounts, plus Home and Trash — with sorting, icon size, alignment, and
 keyboard navigation that covers every feature.
 
+![Desktop Icons](preview.png)
+
 ## The Omarchy way
 
 This is a native Omarchy **plugin**, built the way Omarchy expects plugins to
