@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.linuts.desktop-icons",
+  "name": "Desktop Icons",
+  "version": "1.0.0",
+  "author": "Alexander Libby",
+  "license": "MIT",
+  "entryPoints": {
+    "service": "DesktopIcons.qml"
+  },
+  "kinds": ["service"],
+  "description": "Desktop icons: files and folders, mounted drives, home and trash. Sorting, icon size, alignment and auto-hide while windows are open."
+}
