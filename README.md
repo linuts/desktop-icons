@@ -82,7 +82,7 @@ With the desktop focused:
 | `Tab`          | Next icon                   |
 | `Shift+Tab`    | Open the context menu       |
 | `←  ↑  ↓  →`   | Move the selection in 2D    |
-| `Enter`        | Open the selected item      |
+| `Enter`        | Open the selected item + exit |
 | `Esc`          | Leave keyboard navigation   |
 
 The selection moves across the icons in the visible grid, not a flat list, so
@@ -107,6 +107,24 @@ conventions (`PanelKeyCatcher`-style focus handling):
 
 So the entire workflow — focus the desktop, move to an icon, open its menu,
 change any setting, close it, keep going — happens without the mouse.
+
+### Cheat sheet
+
+| Context     | Key                     | Action                            |
+| ----------- | ----------------------- | --------------------------------- |
+| Desktop     | `SUPER + D`             | Focus the desktop icons           |
+| Desktop     | `Tab`                   | Next icon                         |
+| Desktop     | `Shift+Tab`             | Open the context menu             |
+| Desktop     | `← ↑ ↓ →`               | Move the selection in 2D          |
+| Desktop     | `Enter`                 | Open the item, leave the mode     |
+| Desktop     | `Esc`                   | Leave the mode, restore windows   |
+| Desktop     | Left-click icon         | Open the item                     |
+| Desktop     | Left-click desktop      | Focus the desktop icons           |
+| Desktop     | Right-click any surface | Open the context menu             |
+| Menu        | `Tab` / `↓`             | Next row                          |
+| Menu        | `Shift+Tab` / `↑`       | Previous row                      |
+| Menu        | `Enter`                 | Toggle / apply the highlighted row |
+| Menu        | `Esc`                   | Close the menu, keep navigating   |
 
 To release the desktop without a keypress:
 
