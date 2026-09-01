@@ -588,6 +588,10 @@ Item {
       root.leaveKeys()
     }
 
+    function toggle() {
+      root.keysActive ? root.leaveKeys() : root.enterKeys()
+    }
+
     function listItems(): string {
       var out = []
       for (var i = 0; i < root.itemModel.count; i++) {

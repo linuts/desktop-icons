@@ -60,7 +60,7 @@ Add a Hyprland binding (once — this is the same pattern all Omarchy
 keybindings use). In `~/.config/hypr/bindings.lua`:
 
 ```lua
-o.bind("SUPER + D", "Desktop icons", "omarchy-shell io.github.linuts.desktop-icons focus")
+o.bind("SUPER + D", "Desktop icons", "omarchy-shell io.github.linuts.desktop-icons toggle")
 ```
 
 Then reload Hyprland:
@@ -154,6 +154,7 @@ Settings persist to `~/.local/state/omarchy/desktop-icons/config.json`.
 omarchy-shell io.github.linuts.desktop-icons refresh          # rescan
 omarchy-shell io.github.linuts.desktop-icons focus            # enter keyboard nav
 omarchy-shell io.github.linuts.desktop-icons unfocus          # leave keyboard nav
+omarchy-shell io.github.linuts.desktop-icons toggle           # focus/unfocus toggle
 omarchy-shell io.github.linuts.desktop-icons listItems        # dump state as JSON
 ```
 
